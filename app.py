@@ -470,7 +470,7 @@ def _render_strategy_card(mcda: Dict[str, Any]) -> None:
         f"</div>",
         unsafe_allow_html=True,
     )
-    st.markdown(f"**Strategy Rationale:** {mcda['rationale']}")
+    st.markdown(f"**Pit Wall Radio:** {mcda['rationale']}")
     with st.expander("Weighted Sum Model Breakdown"):
         breakdown = mcda["scores_breakdown"]
         st.dataframe(
