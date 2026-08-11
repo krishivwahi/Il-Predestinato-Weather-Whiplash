@@ -1,5 +1,13 @@
 ---
 title: Weather Whiplash — Live Track Condition Detector
+emoji: 🏎️
+colorFrom: red
+colorTo: gray
+sdk: streamlit
+sdk_version: "1.36.0"
+app_file: app.py
+pinned: false
+license: mit
 ---
 
 # Weather Whiplash: Live Track Condition Detector

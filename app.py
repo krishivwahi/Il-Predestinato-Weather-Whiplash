@@ -747,8 +747,8 @@ st.markdown(
 <div class="ww-footer">
 <b>Hugging Face Hub Integration</b><br>
 Vision model: <a href="https://huggingface.co/openai/clip-vit-base-patch32" target="_blank">openai/clip-vit-base-patch32</a> (zero-shot CLIP)<br>
-Dataset: publish via <code>dataset_setup.py</code> → <a href="https://huggingface.co/datasets" target="_blank">HF Dataset Hub</a><br>
-Weather API: <a href="https://open-meteo.com/" target="_blank">Open-Meteo API</a><br>
+Hugging Face Space: <a href="https://huggingface.co/spaces/astroKW/Weather-Whiplash-IL-Predestinato" target="_blank">astroKW/Weather-Whiplash-IL-Predestinato</a><br>
+Weather API: <a href="https://open-meteo.com/" target="_blank">Open-Meteo API</a> · Team: <a href="https://huggingface.co/astroKW" target="_blank">astroKW (Krishiv Wahi)</a><br>
 Built with Streamlit · Transformers · Plotly · OpenCV — <i>Weather Whiplash Analytics</i>.
 </div>
 """,
