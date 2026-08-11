@@ -200,10 +200,10 @@ def calculate_mcda_action(
         },
         "PIT_INTERMEDIATES": {
             "dry_probability":  wetness,
-            "lap_time_falloff": pace_loss,
-            "traffic_penalty":  1.0 - traffic_risk,
-            "evaporation_rate": 1.0 - evaporation,
-            "tire_wear":        wear,
+            "lap_time_falloff": pace_loss * _clamp(wetness / 0.25),
+            "traffic_penalty":  (1.0 - traffic_risk) * _clamp(wetness / 0.25),
+            "evaporation_rate": (1.0 - evaporation) * _clamp(wetness / 0.25),
+            "tire_wear":        wear * _clamp(wetness / 0.25),
         },
         "HOLD_EXTEND_STINT": {
             "dry_probability":  transition,

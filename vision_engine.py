@@ -24,12 +24,26 @@ MODEL_ID = "openai/clip-vit-base-patch32"
 
 CONDITION_LABELS: List[str] = ["Dry", "Damp", "Wet", "Drying"]
 
-# Zero-shot candidate text prompts aligned with each label.
-_PROMPTS: Dict[str, str] = {
-    "Dry":    "a dry asphalt racing track",
-    "Wet":    "a wet racetrack with standing water",
-    "Damp":   "a damp surface track",
-    "Drying": "a drying racetrack line with dry tyre grooves",
+# Prompt ensembles per category with shadow & lighting disambiguation.
+_PROMPT_ENSEMBLES: Dict[str, List[str]] = {
+    "Dry": [
+        "a dry asphalt racing track surface under sunlight and shadows",
+        "a photo of a dry sunny or shaded racetrack surface",
+        "a dry asphalt circuit road without standing water",
+    ],
+    "Wet": [
+        "a rain-soaked wet racing track with standing water puddles and wet spray",
+        "standing water puddles and rain reflections on a wet racetrack",
+        "a wet rain soaked racing circuit surface with standing water",
+    ],
+    "Damp": [
+        "a damp wet racing track surface with rainwater film",
+        "a damp dark track surface with residual rainwater",
+    ],
+    "Drying": [
+        "a drying racing track line with clear dry tyre tracks",
+        "drying track surface with dry tyre marks through wet asphalt",
+    ],
 }
 
 # Pillow resampling compatibility (Pillow ≥ 10 uses Image.Resampling enum)
@@ -96,6 +110,9 @@ class TrackVisionEngine:
     def classify_track(self, image: Image.Image) -> Dict[str, float]:
         """Classify a track frame into normalized condition probabilities.
 
+        Uses prompt ensembles with shadow disambiguation and dual-view
+        (full frame + upper track ROI crop) to eliminate onboard cockpit false positives.
+
         Args:
             image: A PIL RGB image of the track surface.
 
@@ -108,14 +125,34 @@ class TrackVisionEngine:
         try:
             import torch
 
-            texts = [_PROMPTS[label] for label in CONDITION_LABELS]
+            # Dual view: full image + upper track crop (excluding cockpit/car nosecone)
+            w, h = image.size
+            track_crop = image.crop((0, 0, w, int(h * 0.72)))
+
+            all_prompts: List[str] = []
+            labels_map: List[str] = []
+            for label in CONDITION_LABELS:
+                for p in _PROMPT_ENSEMBLES[label]:
+                    all_prompts.append(p)
+                    labels_map.append(label)
+
             inputs = self.processor(
-                text=texts, images=image, return_tensors="pt", padding=True
+                text=all_prompts, images=[image, track_crop], return_tensors="pt", padding=True
             )
             inputs = {k: v.to(self.device) for k, v in inputs.items()}
             with torch.no_grad():
                 outputs = self.model(**inputs)
-            probs = outputs.logits_per_image.softmax(dim=1)[0].cpu().tolist()
+
+            # Average logits across both views (full frame & track crop)
+            logits = outputs.logits_per_image.mean(dim=0)
+
+            # Aggregate averaged logits for each category
+            label_logits = []
+            for label in CONDITION_LABELS:
+                indices = [i for i, l in enumerate(labels_map) if l == label]
+                label_logits.append(logits[indices].mean())
+
+            probs = torch.stack(label_logits).softmax(dim=0).cpu().tolist()
             return {label: float(p) for label, p in zip(CONDITION_LABELS, probs)}
         except Exception as exc:  # noqa: BLE001
             logger.warning("Inference failed (%s). Using heuristic fallback.", exc)
@@ -137,11 +174,11 @@ class TrackVisionEngine:
 
         wet_score = max(
             0.05,
-            glare * 5.0 + max(blue_bias, 0.0) * 4.0 + max(0.45 - brightness, 0.0) * 2.0,
+            glare * 6.0 + max(blue_bias, 0.0) * 5.0 + max(0.20 - brightness, 0.0) * 3.0,
         )
-        dry_score = max(0.05, (brightness - 0.35) * 2.0 - glare * 3.0)
-        damp_score = max(0.05, 0.6 - abs(wet_score - dry_score))
-        drying_score = max(0.05, min(wet_score, dry_score) * 1.5)
+        dry_score = max(0.10, (brightness - 0.15) * 2.5 - glare * 3.0)
+        damp_score = max(0.05, 0.5 - abs(wet_score - dry_score))
+        drying_score = max(0.05, min(wet_score, dry_score) * 1.2)
 
         raw = {
             "Dry":    dry_score,
