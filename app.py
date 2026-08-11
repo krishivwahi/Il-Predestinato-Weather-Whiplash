@@ -280,6 +280,15 @@ with st.sidebar:
         ["Single Image Upload", "Video Upload (MP4)", "Simulated Live Stream"],
     )
 
+    if mode == "Single Image Upload":
+        isolate_image = st.toggle(
+            "Isolated Image Analysis",
+            value=True,
+            help="When enabled, each uploaded image is evaluated independently without mixing with previous upload history.",
+        )
+    else:
+        isolate_image = False
+
     st.divider()
     st.subheader("Circuit Configuration")
     circuit_type  = st.selectbox("Circuit Type", ["Standard Track", "Street Circuit"])
@@ -403,12 +412,13 @@ def _render_metrics_row(
             )
 
 
-def _render_condition_pills() -> None:
+def _render_condition_pills(history_override: Optional[List[Dict[str, Any]]] = None) -> None:
     """Horizontal rolling-window pill sequence."""
-    if not st.session_state.history:
+    hist = history_override if history_override is not None else st.session_state.history
+    if not hist:
         return
     sequence: List[Tuple[str, str]] = te.get_condition_sequence(
-        st.session_state.history, n=8
+        hist, n=8
     )
     parts: List[str] = []
     for i, (frame_lbl, cond) in enumerate(sequence):
@@ -426,120 +436,6 @@ def _render_condition_pills() -> None:
     )
 
 
-def _render_crossover_banner(velocity: float, eta: Optional[float]) -> None:
-    """Full-width alert banner when a wet→dry crossover window is active."""
-    eta_str = f" — slick window estimated in **~{eta:.0f} laps**" if eta is not None else ""
-    st.markdown(
-        f"<div class='ww-crossover'>"
-        f"<div class='head'>CROSSOVER WINDOW DETECTED</div>"
-        f"<div class='sub'>"
-        f"Dry surface probability accelerating at {velocity:+.1%}/lap{eta_str}. "
-        f"Track state transitioning dry — evaluate compound crossover."
-        f"</div></div>",
-        unsafe_allow_html=True,
-    )
-
-
-def _render_predictions(probs: Dict[str, float]) -> None:
-    """Progress bars for the four condition probabilities + top-label badge."""
-    top_label = max(probs, key=probs.get)  # type: ignore[arg-type]
-    color     = CONDITION_COLORS[top_label]
-    st.markdown(
-        f"<span class='ww-badge' style='background:{color}22;color:{color};"
-        f"border:1px solid {color}66;'>"
-        f"TOP CLASSIFICATION: {top_label.upper()} — {probs[top_label]:.0%}</span>",
-        unsafe_allow_html=True,
-    )
-    st.write("")
-    for label in CONDITION_LABELS:
-        st.progress(min(1.0, float(probs[label])), text=f"{label}: {probs[label]:.1%}")
-
-
-def _render_strategy_card(mcda: Dict[str, Any]) -> None:
-    """High-visibility MCDA strategy call card with WSM breakdown expander."""
-    action      = str(mcda["recommended_action"])
-    color, icon = ACTION_STYLES[action]
-    st.markdown(
-        f"<div class='ww-strategy-card' style='background:{color};"
-        f"box-shadow:0 6px 24px {color}55;'>"
-        f"<div class='sub'>MCDA STRATEGY DECISION · A*</div>"
-        f"<div class='action'>{mcda['recommended_label']}</div>"
-        f"<div class='score'>"
-        f"Utility Score: {max(mcda['scores_breakdown']['action_scores'].values()):.3f} | "
-        f"Confidence: {mcda['confidence_score']:.0%}</div>"
-        f"</div>",
-        unsafe_allow_html=True,
-    )
-    st.markdown(f"**Pit Wall Radio:** {mcda['rationale']}")
-    with st.expander("Weighted Sum Model Breakdown"):
-        breakdown = mcda["scores_breakdown"]
-        st.dataframe(
-            pd.DataFrame({
-                "Action":   list(breakdown["action_scores"].keys()),
-                "Score Sⱼ": [round(v, 4) for v in breakdown["action_scores"].values()],
-            }).sort_values("Score Sⱼ", ascending=False),
-            hide_index=True, use_container_width=True,
-        )
-        signals = breakdown["criteria_signals"]
-        st.caption(
-            "Normalized Signals: "
-            + " · ".join(
-                f"{k} = {v:.3f}" + (f" (w={WEIGHTS[k]:.2f})" if k in WEIGHTS else "")
-                for k, v in signals.items()
-            )
-        )
-
-
-def _render_trend_chart() -> None:
-    """Real-time Plotly trend chart with per-condition velocity annotation."""
-    st.subheader("Temporal Condition Trend")
-    if not st.session_state.history:
-        st.info("No frames analysed yet — trend visualization populates as telemetry streams.")
-        return
-
-    df = pd.DataFrame(st.session_state.history)
-    x  = list(range(1, len(df) + 1))
-
-    fig = go.Figure()
-    for label in CONDITION_LABELS:
-        color = CONDITION_COLORS[label]
-        y     = df[label].tolist()
-        fig.add_trace(go.Scatter(
-            x=x, y=y, mode="lines+markers", name=label,
-            line=dict(color=color, width=3),
-            marker=dict(size=6),
-        ))
-
-    # Annotate the drying velocity on the chart
-    velocity = te.compute_drying_velocity(st.session_state.history)
-    v_label, _, _ = te.trend_label(velocity)
-    fig.add_annotation(
-        xref="paper", yref="paper", x=0.01, y=0.97,
-        text=f"Drying velocity: {velocity:+.2%}/lap ({v_label})",
-        showarrow=False,
-        font=dict(size=12, color="#cbd5e1"),
-        bgcolor="rgba(15,23,42,0.75)",
-        borderpad=6,
-    )
-
-    fig.update_layout(
-        template="plotly_dark",
-        paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="rgba(15,23,42,0.6)",
-        height=360,
-        margin=dict(l=8, r=8, t=8, b=8),
-        xaxis_title="Frame / Lap",
-        yaxis_title="Probability",
-        yaxis=dict(range=[0, 1]),
-        legend=dict(orientation="h", y=1.12, x=0),
-        xaxis=dict(gridcolor="#1e293b"),
-    )
-    st.plotly_chart(
-        fig, use_container_width=True,
-        key=f"trend_{st.session_state.frame_count}",
-    )
-
-
 def _render_analysis(
     image: Image.Image,
     probs: Dict[str, float],
@@ -547,18 +443,19 @@ def _render_analysis(
     show_hm: bool,
     eng: TrackVisionEngine,
     caption: str = "Input frame",
+    isolated: bool = False,
 ) -> None:
     """Full analysis panel: metrics row · pills · crossover banner · 3-col vision feed."""
-    history = st.session_state.history
-    velocity = te.compute_drying_velocity(history)
-    crossover = te.detect_crossover_window(history)
-    eta       = te.compute_eta_laps(history)
+    history = st.session_state.history if not isolated else (st.session_state.history[-1:] if st.session_state.history else [])
+    velocity = te.compute_drying_velocity(history) if not isolated else 0.0
+    crossover = te.detect_crossover_window(history) if not isolated else False
+    eta       = te.compute_eta_laps(history) if not isolated else None
 
     # ── Metrics row ──────────────────────────────────────────────────────────
     _render_metrics_row(probs, mcda, velocity)
 
     # ── Rolling condition pills ───────────────────────────────────────────────
-    _render_condition_pills()
+    _render_condition_pills(history_override=history)
 
     # ── Crossover banner (when window is active) ──────────────────────────────
     if crossover:
@@ -622,11 +519,12 @@ if mode == "Single Image Upload":
         if st.session_state.last_image_sig != sig:
             st.session_state.last_image_sig = sig
             _push_history(uploaded.name, probs, str(mcda["recommended_action"]))
-        _render_analysis(image, probs, mcda, show_heatmap, engine, caption=uploaded.name)
+        _render_analysis(image, probs, mcda, show_heatmap, engine, caption=uploaded.name, isolated=isolate_image)
         _maybe_pit_alert(str(mcda["recommended_action"]), alert_placeholder)
 
-    st.divider()
-    _render_trend_chart()
+    if not isolate_image:
+        st.divider()
+        _render_trend_chart()
 
 # ===========================================================================
 # Mode: Video Upload (MP4)
