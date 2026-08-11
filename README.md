@@ -152,6 +152,14 @@ pip install accelerate>=0.26
 
 ---
 
+## Datasets & Reference Sources
+
+- **[Kaggle F1 World Championship Dataset (1950–Present)](https://www.kaggle.com/datasets/rohanrao/formula-1-world-championship-1950-2020)**: Circuit geolocations, pit stop loss baselines, and wet-to-dry transition historical lap times used to calibrate MCDA decision parameters.
+- **[Weather Whiplash Track Surface Dataset](dataset/links.txt)**: Optical track surface dataset categorized into `dry/`, `damp/`, `wet/`, and `drying/` classes for zero-shot CLIP classification.
+- **[Open-Meteo Weather API](https://open-meteo.com/)**: Real-time circuit air temperature and relative humidity.
+
+---
+
 ## Project Files
 
 | File | Purpose |
@@ -162,6 +170,7 @@ pip install accelerate>=0.26
 | [`trend_engine.py`](trend_engine.py) | Temporal trend analytics — drying velocity, crossover window detection, ETA estimation |
 | [`simulation.py`](simulation.py) | Live-stream simulator with synthetic wet→dry frame generator |
 | [`dataset_setup.py`](dataset_setup.py) | Uploads the sample dataset to the HF Dataset Hub |
+| [`dataset/links.txt`](dataset/links.txt) | Dataset reference documentation, schema links, and usage descriptions |
 | [`PITCH_PRESENTATION.md`](PITCH_PRESENTATION.md) | 2-minute judge pitch script with per-segment timing and rehearsal checklist |
 | [`.streamlit/config.toml`](.streamlit/config.toml) | Streamlit dark theme + HF Spaces server configuration |
 

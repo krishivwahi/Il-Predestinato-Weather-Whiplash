@@ -1,0 +1,42 @@
+===============================================================================
+WEATHER WHIPLASH: PROJECT DATASET DIRECTORY & REFERENCE LINKS
+===============================================================================
+
+1. Formula 1 World Championship Dataset (1950 - Present)
+   URL: https://www.kaggle.com/datasets/rohanrao/formula-1-world-championship-1950-2020
+   Source: Ergast F1 Motor Racing Data API / Kaggle (Rohan Rao)
+   Description:
+     Comprehensive relational dataset of Formula 1 races, circuit geographic
+     coordinates, lap times, pit stop durations, driver standings, and race 
+     status logs.
+   Project Relevance & Usage:
+     - Circuit Coordinates & Geolocation: Extracted track latitudes and longitudes
+       (e.g., Monaco, Silverstone, Spa, Suzuka, Monza) for automated weather 
+       retrieval via Open-Meteo.
+     - Lap Delta & Pit Loss Calibration: Historical pit stop durations and lap time 
+       falloff rates during wet-to-dry transition races used to calibrate the 
+       MCDA Weighted Sum Model (w2 lap_time_falloff and w3 traffic_penalty).
+     - Strategy Benchmark Validation: Historical compound crossover timing data 
+       used to benchmark the optimal pit call algorithm.
+
+2. Open-Meteo Live Weather & Climate API
+   URL: https://open-meteo.com/
+   Description:
+     Free open-source weather forecasting API delivering current track air temperature,
+     surface temperature estimates, and relative humidity (% RH) without requiring
+     an API key.
+   Project Relevance & Usage:
+     - Feeds the MCDA Evaporation Rate criterion (w4), balancing thermal track drying
+       potential against ambient relative humidity.
+
+3. Weather Whiplash Track Surface Dataset (Hugging Face Hub)
+   URL: https://huggingface.co/datasets
+   Description:
+     Image dataset containing optical track surface frames categorized into four
+     discrete condition classes: `dry/`, `damp/`, `wet/`, and `drying/`.
+   Project Relevance & Usage:
+     - Validated using zero-shot CLIP inference (`openai/clip-vit-base-patch32`) and
+       dual-view ROI cropping for track surface classification.
+     - Published via `dataset_setup.py`.
+
+===============================================================================
