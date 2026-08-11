@@ -71,23 +71,23 @@ def compute_drying_velocity(history: list, window: int = 5) -> float:
 # Trend label
 # ---------------------------------------------------------------------------
 def trend_label(velocity: float) -> Tuple[str, str, str]:
-    """Classify a drying velocity into a human label, icon, and hex colour.
+    """Classify a drying velocity into a human label, indicator symbol, and hex colour.
 
     Args:
         velocity: Drying velocity from :func:`compute_drying_velocity`.
 
     Returns:
-        ``(label, icon, colour_hex)`` tuple.
+        ``(label, indicator, colour_hex)`` tuple.
     """
     if velocity > VELOCITY_THRESHOLD_FAST:
-        return "RAPID DRYING", "🔺", "#2ecc71"
+        return "RAPID DRYING", "+", "#2ecc71"
     if velocity > VELOCITY_THRESHOLD_SLOW:
-        return "DRYING",       "📈", "#7ed6df"
+        return "DRYING",       "+", "#7ed6df"
     if velocity < VELOCITY_WET_FAST:
-        return "RAPID WETTING","🔻", "#e74c3c"
+        return "RAPID WETTING","-", "#e74c3c"
     if velocity < VELOCITY_WET_SLOW:
-        return "WETTING",      "📉", "#f39c12"
-    return     "STABLE",       "➡️", "#8b949e"
+        return "WETTING",      "-", "#f39c12"
+    return     "STABLE",       "=", "#8b949e"
 
 
 # ---------------------------------------------------------------------------

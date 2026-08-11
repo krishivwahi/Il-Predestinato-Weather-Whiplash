@@ -31,10 +31,10 @@ from typing import Any, Dict
 # Action space
 # ---------------------------------------------------------------------------
 ACTIONS: Dict[str, str] = {
-    "STAY_OUT":          "Stay Out — maintain current tyres",
-    "PIT_SLICKS":        "Box Box — fit Dry Slicks",
-    "PIT_INTERMEDIATES": "Box Box — fit Intermediates",
-    "HOLD_EXTEND_STINT": "Hold — extend stint 2 laps (traffic risk)",
+    "STAY_OUT":          "Maintain Stint — Stay Out",
+    "PIT_SLICKS":        "Pit Entry — Fit Dry Slicks",
+    "PIT_INTERMEDIATES": "Pit Entry — Fit Intermediates",
+    "HOLD_EXTEND_STINT": "Extend Stint — Hold 2 Laps",
 }
 
 # ---------------------------------------------------------------------------
@@ -91,37 +91,33 @@ def _build_rationale(
 
     if action == "PIT_SLICKS":
         return (
-            f"Surface dryness confidence is {dryness:.0%}. Track temp {track_temp_c:.0f} °C "
-            f"with {humidity_pct:.0f}% humidity — evaporation rate is "
-            f"{'high' if humidity_pct < 40 else 'moderate' if humidity_pct < 70 else 'suppressed'}. "
-            f"Pace loss is {lap_delta:+.1f} s per lap — the slick crossover window is open. "
-            f"On a {circuit} with {traffic}, we take the undercut now before rivals react. "
-            f"Box this lap, box, confirm."
+            f"Surface dryness confidence reaches {dryness:.0%}. Track temperature of {track_temp_c:.0f} °C "
+            f"and humidity of {humidity_pct:.0f}% indicate "
+            f"{'elevated' if humidity_pct < 40 else 'moderate' if humidity_pct < 70 else 'suppressed'} evaporation. "
+            f"Observed lap delta is {lap_delta:+.1f} s — dry compound crossover threshold met. "
+            f"On a {circuit} with {traffic}, immediate pit entry is recommended."
         )
     if action == "PIT_INTERMEDIATES":
         return (
-            f"Vision engine reads {wetness:.0%} wet-side probability. Humidity at "
-            f"{humidity_pct:.0f}% confirms slow evaporation — the surface is not drying soon. "
-            f"Pace loss of {lap_delta:+.1f} s says current rubber has no grip. "
-            f"Standing water risk outweighs pit-loss cost. Box for intermediates — "
-            f"safety and lap time point the same way. Box, box, intermediates."
+            f"Vision pipeline indicates {wetness:.0%} wet surface probability. Humidity at "
+            f"{humidity_pct:.0f}% restricts evaporation rate. "
+            f"Current lap delta of {lap_delta:+.1f} s indicates severe grip loss. "
+            f"Standing water risk exceeds pit stop overhead. Intermediate compound change advised."
         )
     if action == "HOLD_EXTEND_STINT":
         return (
-            f"Conditions are at the crossover ({dryness:.0%} dry-side confidence). "
-            f"Humidity is {humidity_pct:.0f}% — track evaporation is "
-            f"{'progressing well' if humidity_pct < 55 else 'slow, buy more time'}. "
-            f"On a {circuit} with {traffic}, pitting now sacrifices track position. "
-            f"Target +2 laps: hold, manage the tyres ({tire_wear_pct:.0%} worn), "
-            f"and re-evaluate every lap. Stay out, stay out."
+            f"Track state is in transition ({dryness:.0%} dry probability). "
+            f"Humidity at {humidity_pct:.0f}% indicates "
+            f"{'steady evaporation' if humidity_pct < 55 else 'slow evaporation'}. "
+            f"On a {circuit} with {traffic}, an immediate pit stop risks severe track position loss. "
+            f"Stint extension by 2 laps recommended to clear traffic window."
         )
     # STAY_OUT
     return (
-        f"Pace delta of {lap_delta:+.1f} s is within tolerance, tyre wear at "
-        f"{tire_wear_pct:.0%}, and humidity of {humidity_pct:.0f}% means "
-        f"{'conditions are stable' if humidity_pct > 60 else 'evaporation is progressing'}. "
-        f"No stop justified — track position is worth more than a marginal compound "
-        f"change right now. Stay out and feed us surface reports every lap."
+        f"Lap delta of {lap_delta:+.1f} s remains within operating margin, tire wear is at "
+        f"{tire_wear_pct:.0%}, and humidity of {humidity_pct:.0f}% suggests "
+        f"{'stable track state' if humidity_pct > 60 else 'progressive evaporation'}. "
+        f"Current stint maintenance recommended to preserve track position."
     )
 
 

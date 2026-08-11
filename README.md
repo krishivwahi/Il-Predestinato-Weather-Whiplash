@@ -4,16 +4,13 @@ title: Weather Whiplash — Live Track Condition Detector
 
 # Weather Whiplash: Live Track Condition Detector
 
-An AI race-strategy dashboard that watches the track surface in real time,
-classifies it as **Dry, Damp, Wet, or Drying** using zero-shot CLIP from the
-Hugging Face Hub, tracks the temporal probability trend lap by lap, and
-converts vision + telemetry + track context into a concrete pit-wall call
-through a **Multi-Criteria Decision Analysis (MCDA)** engine.
+An enterprise race-strategy platform that analyzes track surface optical feeds in real time,
+classifies conditions as **Dry, Damp, Wet, or Drying** using zero-shot CLIP from the
+Hugging Face Hub, computes temporal drying velocity, and processes vision, weather,
+and vehicle telemetry into optimal compound decisions via a **Multi-Criteria Decision Analysis (MCDA)** engine.
 
-> Track conditions change faster than weather reports. On a street circuit,
-> pitting one lap too early or too late costs track position you never recover.
-> **Weather Whiplash** answers the only question that matters on the pit wall:
-> *is the track getting better or worse — and what do we do about it right now?*
+> Track surface state evolves rapidly during dynamic weather transitions.
+> **Weather Whiplash** provides real-time automated decision support to identify compound crossover windows and optimize pit window timing.
 
 ---
 

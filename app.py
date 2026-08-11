@@ -37,9 +37,11 @@ from vision_engine import CONDITION_LABELS, MODEL_ID, TrackVisionEngine
 # ---------------------------------------------------------------------------
 # Page configuration
 # ---------------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# Page configuration
+# ---------------------------------------------------------------------------
 st.set_page_config(
     page_title="Weather Whiplash — Live Track Condition Detector",
-    page_icon="🏎️",
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -62,82 +64,81 @@ F1_CIRCUITS: Dict[str, Optional[Tuple[float, float]]] = {
 }
 
 # ---------------------------------------------------------------------------
-# CSS — dark racing theme with Inter font and animation keyframes
+# CSS — Corporate dark theme
 # ---------------------------------------------------------------------------
 _CSS = """
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap');
 
 html, body, [class*="css"] {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 .stApp {
-    background: linear-gradient(170deg, #08090d 0%, #0d1117 60%, #111620 100%);
+    background: #090d16;
 }
 section[data-testid="stSidebar"] {
-    background: #0d1117;
-    border-right: 1px solid #21262d;
+    background: #0f172a;
+    border-right: 1px solid #1e293b;
 }
 section[data-testid="stSidebar"] label,
-section[data-testid="stSidebar"] .stMarkdown p { color: #c9d1d9; }
+section[data-testid="stSidebar"] .stMarkdown p { color: #94a3b8; }
 
-h1 { color: #f0f6fc; letter-spacing: -0.5px; }
-h2 { color: #e6edf3; }
-h3 { color: #cdd9e5; font-size: 1.0rem; font-weight: 700;
+h1 { color: #f8fafc; letter-spacing: -0.5px; font-weight: 800; }
+h2 { color: #f1f5f9; font-weight: 700; }
+h3 { color: #cbd5e1; font-size: 0.95rem; font-weight: 700;
      text-transform: uppercase; letter-spacing: 1px; }
 
-div[data-testid="stMetricValue"]  { color: #e10600; font-weight: 800; }
-div[data-testid="stMetricLabel"]  { color: #8b949e; font-size: 0.75rem;
+div[data-testid="stMetricValue"]  { color: #ef4444; font-weight: 800; font-family: 'JetBrains Mono', monospace; }
+div[data-testid="stMetricLabel"]  { color: #64748b; font-size: 0.75rem;
                                      text-transform: uppercase; letter-spacing: 0.8px; }
 
 /* General badge pill */
 .ww-badge {
-    display: inline-block; padding: 4px 14px; border-radius: 999px;
-    font-weight: 700; font-size: 0.78rem; letter-spacing: 1.2px;
+    display: inline-block; padding: 4px 14px; border-radius: 6px;
+    font-weight: 600; font-size: 0.78rem; letter-spacing: 0.8px;
+    font-family: 'JetBrains Mono', monospace;
 }
 
 /* Metric cards row */
 .ww-metric-card {
-    background: #161b22; border: 1px solid #21262d; border-radius: 10px;
-    padding: 10px 18px; flex: 1; min-width: 110px;
+    background: #0f172a; border: 1px solid #1e293b; border-radius: 8px;
+    padding: 12px 18px; flex: 1; min-width: 110px;
 }
-.ww-metric-card .val  { font-size: 1.25rem; font-weight: 800; color: #e10600; line-height: 1.1; }
-.ww-metric-card .lbl  { font-size: 0.68rem; color: #8b949e; text-transform: uppercase;
-                         letter-spacing: 0.9px; margin-top: 3px; }
+.ww-metric-card .val  { font-size: 1.2rem; font-weight: 800; color: #ef4444; line-height: 1.1; font-family: 'JetBrains Mono', monospace; }
+.ww-metric-card .lbl  { font-size: 0.68rem; color: #64748b; text-transform: uppercase;
+                         letter-spacing: 0.9px; margin-top: 4px; font-weight: 600; }
 
 /* Condition pills */
 .ww-pill-row { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin: 10px 0; }
-.ww-pill     { display: inline-block; padding: 3px 10px; border-radius: 999px;
+.ww-pill     { display: inline-block; padding: 4px 12px; border-radius: 6px;
                 font-size: 0.72rem; font-weight: 700; letter-spacing: 0.8px;
+                font-family: 'JetBrains Mono', monospace;
                 border: 1px solid currentColor; }
-.ww-arrow    { color: #444c56; font-size: 1.1rem; line-height: 1; }
+.ww-arrow    { color: #475569; font-size: 1.0rem; line-height: 1; }
 
-/* Crossover banner — pulsing orange glow */
-@keyframes crossover-pulse {
-  0%,100% { box-shadow: 0 0 0 0 rgba(198,74,0,0.50); }
-  50%      { box-shadow: 0 0 0 14px rgba(198,74,0,0); }
-}
+/* Crossover banner — alert style */
 .ww-crossover {
-    background: linear-gradient(90deg, #7a2700, #c64a00);
-    border-radius: 12px; padding: 14px 22px; margin: 12px 0;
-    animation: crossover-pulse 2s ease-in-out infinite;
+    background: #1e1b4b;
+    border: 1px solid #4338ca;
+    border-left: 5px solid #6366f1;
+    border-radius: 8px; padding: 14px 20px; margin: 12px 0;
 }
-.ww-crossover .head { font-size: 1.05rem; font-weight: 800; color: #fff; }
-.ww-crossover .sub  { color: rgba(255,255,255,0.88); font-size: 0.88rem; margin-top: 4px; }
+.ww-crossover .head { font-size: 1.0rem; font-weight: 800; color: #f8fafc; letter-spacing: 0.5px; }
+.ww-crossover .sub  { color: #c7d2fe; font-size: 0.88rem; margin-top: 4px; }
 
 /* Strategy card */
-.ww-strategy-card { border-radius: 14px; padding: 18px 22px; margin-bottom: 10px; }
-.ww-strategy-card .sub    { font-size: 0.70rem; letter-spacing: 2px;
-                              color: rgba(255,255,255,0.55); text-transform: uppercase; }
-.ww-strategy-card .action { font-size: 1.4rem; font-weight: 800; color: #fff; margin: 8px 0 4px 0; }
-.ww-strategy-card .score  { color: rgba(255,255,255,0.85); font-weight: 600; font-size: 0.9rem; }
+.ww-strategy-card { border-radius: 8px; padding: 18px 22px; margin-bottom: 12px; border: 1px solid rgba(255,255,255,0.1); }
+.ww-strategy-card .sub    { font-size: 0.70rem; letter-spacing: 1.5px;
+                              color: rgba(255,255,255,0.7); text-transform: uppercase; font-weight: 700; }
+.ww-strategy-card .action { font-size: 1.35rem; font-weight: 800; color: #fff; margin: 6px 0 4px 0; }
+.ww-strategy-card .score  { color: rgba(255,255,255,0.85); font-weight: 600; font-size: 0.88rem; font-family: 'JetBrains Mono', monospace; }
 
 /* Footer */
-.ww-footer { color: #6e7681; font-size: 0.82rem; line-height: 1.85; padding: 10px 0; }
-.ww-footer a { color: #58a6ff; text-decoration: none; }
+.ww-footer { color: #64748b; font-size: 0.82rem; line-height: 1.8; padding: 12px 0; }
+.ww-footer a { color: #38bdf8; text-decoration: none; }
 .ww-footer a:hover { text-decoration: underline; }
 
-hr { border-color: #21262d !important; }
+hr { border-color: #1e293b !important; }
 #MainMenu { visibility: hidden; }
 footer    { visibility: hidden; }
 </style>
@@ -148,16 +149,16 @@ st.markdown(_CSS, unsafe_allow_html=True)
 # Colour maps
 # ---------------------------------------------------------------------------
 CONDITION_COLORS: Dict[str, str] = {
-    "Dry":    "#f5a623",
-    "Damp":   "#7ed6df",
-    "Wet":    "#2f6fed",
-    "Drying": "#2ecc71",
+    "Dry":    "#f59e0b",
+    "Damp":   "#38bdf8",
+    "Wet":    "#2563eb",
+    "Drying": "#10b981",
 }
 ACTION_STYLES: Dict[str, Tuple[str, str]] = {
-    "STAY_OUT":          ("#1e7d32", "🟢"),
-    "PIT_SLICKS":        ("#c64a00", "🟠"),
-    "PIT_INTERMEDIATES": ("#1256a8", "🔵"),
-    "HOLD_EXTEND_STINT": ("#5b1298", "🟣"),
+    "STAY_OUT":          ("#166534", ""),
+    "PIT_SLICKS":        ("#9a3412", ""),
+    "PIT_INTERMEDIATES": ("#1e40af", ""),
+    "HOLD_EXTEND_STINT": ("#6b21a8", ""),
 }
 PIT_ACTIONS = frozenset({"PIT_SLICKS", "PIT_INTERMEDIATES"})
 
@@ -165,7 +166,7 @@ PIT_ACTIONS = frozenset({"PIT_SLICKS", "PIT_INTERMEDIATES"})
 # ---------------------------------------------------------------------------
 # Cached resources
 # ---------------------------------------------------------------------------
-@st.cache_resource(show_spinner="🔧 Warming up the CLIP vision engine…")
+@st.cache_resource(show_spinner="Initializing vision inference engine…")
 def get_engine() -> TrackVisionEngine:
     """Load TrackVisionEngine once per Space session."""
     return TrackVisionEngine()
@@ -173,7 +174,7 @@ def get_engine() -> TrackVisionEngine:
 
 @st.cache_data
 def _synthesize_alert_wav() -> bytes:
-    """Build a short pit-wall chirp as raw WAV bytes (no external assets)."""
+    """Build a short audio notification as raw WAV bytes."""
     sr, dur = 22_050, 0.75
     t = np.linspace(0.0, dur, int(sr * dur), endpoint=False)
     tone = (
@@ -190,9 +191,9 @@ def _synthesize_alert_wav() -> bytes:
 
 @st.cache_data(ttl=300, show_spinner=False)
 def _fetch_circuit_weather(lat: float, lon: float) -> Optional[Dict[str, Any]]:
-    """Fetch live temperature and humidity from Open-Meteo (free, no API key).
+    """Fetch live temperature and humidity from Open-Meteo API.
 
-    Results are cached for 5 minutes so rapid reruns don't hammer the API.
+    Results are cached for 5 minutes to optimize API usage.
 
     Args:
         lat: Circuit latitude.
@@ -200,7 +201,7 @@ def _fetch_circuit_weather(lat: float, lon: float) -> Optional[Dict[str, Any]]:
 
     Returns:
         Dict with ``temperature_2m`` and ``relative_humidity_2m``, or ``None``
-        if the network request fails.
+        if network request fails.
     """
     try:
         import requests  # noqa: PLC0415
@@ -249,32 +250,30 @@ def _push_history(frame_label: object, probs: Dict[str, float], action: str) -> 
 # ---------------------------------------------------------------------------
 # Header
 # ---------------------------------------------------------------------------
-st.title("🏎️ Weather Whiplash: Live Track Condition Detector")
+st.title("Weather Whiplash: Live Track Condition Detector")
 st.markdown(
-    f"<span class='ww-badge' style='background:#ffd21e22;color:#ffd21e;"
-    f"border:1px solid #ffd21e44;'>"
-    f"🤗 Hugging Face · {MODEL_ID}</span>",
+    f"<span class='ww-badge' style='background:#1e293b;color:#94a3b8;"
+    f"border:1px solid #334155;'>"
+    f"Hugging Face Model · {MODEL_ID}</span>",
     unsafe_allow_html=True,
 )
 
 engine = get_engine()
 if engine.mock_mode:
     st.warning(
-        "Vision model could not be loaded — running in **heuristic mock mode**. "
-        "All dashboard features remain fully functional.",
-        icon="⚠️",
+        "Vision model unavailable. Running in **heuristic simulation mode**. "
+        "All strategy dashboard features remain active."
     )
 else:
     st.success(
-        f"CLIP engine ready on `{engine.device}`. Upload a frame or start the stream.",
-        icon="✅",
+        f"Vision engine initialized on `{engine.device}`. Upload input frame or initiate simulation stream."
     )
 
 # ---------------------------------------------------------------------------
 # Sidebar — Strategy Control Panel
 # ---------------------------------------------------------------------------
 with st.sidebar:
-    st.header("🎛️ Strategy Control Panel")
+    st.header("Strategy Control Panel")
 
     mode = st.radio(
         "Input Mode",
@@ -282,40 +281,38 @@ with st.sidebar:
     )
 
     st.divider()
-    st.subheader("Circuit Settings")
+    st.subheader("Circuit Configuration")
     circuit_type  = st.selectbox("Circuit Type", ["Standard Track", "Street Circuit"])
     is_street     = circuit_type == "Street Circuit"
     traffic_dense = st.toggle("Dense Traffic (midfield train)", value=False)
 
     # ── Weather & Environment ───────────────────────────────────────────────
     st.divider()
-    st.subheader("🌦️ Weather & Environment")
+    st.subheader("Weather & Environment")
 
     circuit_name   = st.selectbox(
-        "F1 Circuit (auto-fill weather)",
+        "Circuit Location (Auto-fill Weather)",
         list(F1_CIRCUITS.keys()),
-        help="Select a circuit to fetch live temperature and humidity from Open-Meteo.",
+        help="Select a circuit location to retrieve current weather data.",
     )
     circuit_coords = F1_CIRCUITS.get(circuit_name)
 
-    if circuit_coords and st.button("🌐 Fetch Live Weather", use_container_width=True):
+    if circuit_coords and st.button("Fetch Live Weather Data", use_container_width=True):
         with st.spinner(f"Fetching weather for {circuit_name}…"):
             weather = _fetch_circuit_weather(*circuit_coords)
         if weather and weather["temperature_2m"] is not None:
             air_t   = float(weather["temperature_2m"])
-            # Track surface is typically 10–20 °C above air temp in fine conditions;
-            # use +14 °C as a conservative race-day estimate, clamped to slider range.
             track_t = max(10, min(50, int(air_t + 14)))
             hum     = max(0,  min(100, int(weather["relative_humidity_2m"] or 55)))
             st.session_state.track_temp_slider = track_t
             st.session_state.humidity_slider   = hum
             st.session_state.weather_fetch_msg = (
-                f"✅ {circuit_name}: {air_t:.0f} °C air → ~{track_t} °C track est., "
+                f"{circuit_name}: {air_t:.0f} °C air → ~{track_t} °C track est., "
                 f"{hum}% RH"
             )
         else:
             st.session_state.weather_fetch_msg = (
-                "❌ Could not reach Open-Meteo. Check your connection."
+                "Could not connect to weather service."
             )
 
     if st.session_state.weather_fetch_msg:
@@ -334,13 +331,13 @@ with st.sidebar:
 
     # ── Telemetry Settings ──────────────────────────────────────────────────
     st.divider()
-    st.subheader("Telemetry Settings")
+    st.subheader("Telemetry Parameters")
     lap_delta = st.slider("Lap Delta vs. baseline (s)", 0.0, 5.0, 2.5, 0.1)
     tire_wear = st.slider("Current Tyre Wear", 0.0, 1.0, 0.40, 0.05)
 
     # ── Vision ──────────────────────────────────────────────────────────────
     st.divider()
-    st.subheader("Vision")
+    st.subheader("Vision Pipeline")
     show_heatmap = st.toggle(
         "Enable Grad-CAM Heatmap",
         value=False,
@@ -351,13 +348,13 @@ with st.sidebar:
         sample_interval = st.slider("Frame sample interval (s)", 0.5, 5.0, 1.5, 0.5)
     if mode == "Simulated Live Stream":
         total_laps   = st.slider("Simulated laps", 5, 25, 15)
-        start_stream = st.button("🚦 Start / Restart Stream", type="primary")
+        start_stream = st.button("Start Live Simulation Stream", type="primary")
     else:
         start_stream = False
         total_laps   = 15
 
     st.divider()
-    if st.button("🗑️ Reset Trend History", use_container_width=True):
+    if st.button("Reset Session History", use_container_width=True):
         st.session_state.history          = []
         st.session_state.frame_count      = 0
         st.session_state.last_alert_action = None
@@ -380,10 +377,7 @@ def _render_metrics_row(
     mcda: Dict[str, Any],
     velocity: float,
 ) -> None:
-    """Five-card dashboard metrics row above the main vision panel.
-
-    Cards: Top Condition · MCDA Confidence · Strategy Call · Drying Velocity · Frames
-    """
+    """Five-card dashboard metrics row above the main vision panel."""
     top_label  = max(probs, key=probs.get)  # type: ignore[arg-type]
     color      = CONDITION_COLORS[top_label]
     action_key = str(mcda["recommended_action"])
@@ -394,10 +388,10 @@ def _render_metrics_row(
     c1, c2, c3, c4, c5 = st.columns(5)
     cards = [
         (c1, color,   top_label.upper(),                          "Track Condition"),
-        (c2, "#e10600", f"{mcda['confidence_score']:.0%}",        "MCDA Confidence"),
-        (c3, ACTION_STYLES[action_key][0], f"{icon} {action_key.replace('_',' ')}", "Strategy Call"),
-        (c4, v_color, f"{v_icon} {v_pct}",                        "Drying Velocity"),
-        (c5, "#8b949e", str(st.session_state.frame_count),        "Frames Analysed"),
+        (c2, "#ef4444", f"{mcda['confidence_score']:.0%}",        "MCDA Confidence"),
+        (c3, ACTION_STYLES[action_key][0], f"{action_key.replace('_',' ')}", "Strategy Decision"),
+        (c4, v_color, f"{v_pct}",                                 "Drying Velocity"),
+        (c5, "#94a3b8", str(st.session_state.frame_count),        "Frames Analysed"),
     ]
     for col, clr, val, lbl in cards:
         with col:
@@ -410,10 +404,7 @@ def _render_metrics_row(
 
 
 def _render_condition_pills() -> None:
-    """Horizontal rolling-window pill sequence: Lap 1 ● WET → Lap 4 ● DAMP → …
-
-    Shows the last 8 frames as colour-coded pills with arrow separators.
-    """
+    """Horizontal rolling-window pill sequence."""
     if not st.session_state.history:
         return
     sequence: List[Tuple[str, str]] = te.get_condition_sequence(
@@ -424,7 +415,7 @@ def _render_condition_pills() -> None:
         clr = CONDITION_COLORS[cond]
         parts.append(
             f"<span class='ww-pill' style='color:{clr};border-color:{clr}44;"
-            f"background:{clr}18;'>{frame_lbl} ● {cond.upper()}</span>"
+            f"background:{clr}18;'>{frame_lbl} - {cond.upper()}</span>"
         )
         if i < len(sequence) - 1:
             parts.append("<span class='ww-arrow'>→</span>")
@@ -436,17 +427,14 @@ def _render_condition_pills() -> None:
 
 
 def _render_crossover_banner(velocity: float, eta: Optional[float]) -> None:
-    """Full-width pulsing orange banner when a wet→dry crossover window is active.
-
-    Includes the drying velocity rate and an ETA estimate to the slick threshold.
-    """
-    eta_str = f" — slick window in **~{eta:.0f} laps**" if eta is not None else ""
+    """Full-width alert banner when a wet→dry crossover window is active."""
+    eta_str = f" — slick window estimated in **~{eta:.0f} laps**" if eta is not None else ""
     st.markdown(
         f"<div class='ww-crossover'>"
-        f"<div class='head'>⚡ CROSSOVER WINDOW DETECTED</div>"
+        f"<div class='head'>CROSSOVER WINDOW DETECTED</div>"
         f"<div class='sub'>"
-        f"Dry-side probability accelerating at {velocity:+.1%}/lap{eta_str}. "
-        f"Track trending dry — evaluate slick crossover now."
+        f"Dry surface probability accelerating at {velocity:+.1%}/lap{eta_str}. "
+        f"Track state transitioning dry — evaluate compound crossover."
         f"</div></div>",
         unsafe_allow_html=True,
     )
@@ -459,7 +447,7 @@ def _render_predictions(probs: Dict[str, float]) -> None:
     st.markdown(
         f"<span class='ww-badge' style='background:{color}22;color:{color};"
         f"border:1px solid {color}66;'>"
-        f"TOP CALL: {top_label.upper()} — {probs[top_label]:.0%}</span>",
+        f"TOP CLASSIFICATION: {top_label.upper()} — {probs[top_label]:.0%}</span>",
         unsafe_allow_html=True,
     )
     st.write("")
@@ -474,16 +462,16 @@ def _render_strategy_card(mcda: Dict[str, Any]) -> None:
     st.markdown(
         f"<div class='ww-strategy-card' style='background:{color};"
         f"box-shadow:0 6px 24px {color}55;'>"
-        f"<div class='sub'>MCDA STRATEGY CALL · A*</div>"
-        f"<div class='action'>{icon} {mcda['recommended_label']}</div>"
+        f"<div class='sub'>MCDA STRATEGY DECISION · A*</div>"
+        f"<div class='action'>{mcda['recommended_label']}</div>"
         f"<div class='score'>"
-        f"Utility {max(mcda['scores_breakdown']['action_scores'].values()):.3f} · "
-        f"Confidence {mcda['confidence_score']:.0%}</div>"
+        f"Utility Score: {max(mcda['scores_breakdown']['action_scores'].values()):.3f} | "
+        f"Confidence: {mcda['confidence_score']:.0%}</div>"
         f"</div>",
         unsafe_allow_html=True,
     )
-    st.markdown(f"**📻 Pit wall:** {mcda['rationale']}")
-    with st.expander("🔢 Weighted Sum Model breakdown"):
+    st.markdown(f"**Strategy Rationale:** {mcda['rationale']}")
+    with st.expander("Weighted Sum Model Breakdown"):
         breakdown = mcda["scores_breakdown"]
         st.dataframe(
             pd.DataFrame({
@@ -494,7 +482,7 @@ def _render_strategy_card(mcda: Dict[str, Any]) -> None:
         )
         signals = breakdown["criteria_signals"]
         st.caption(
-            "Signals: "
+            "Normalized Signals: "
             + " · ".join(
                 f"{k} = {v:.3f}" + (f" (w={WEIGHTS[k]:.2f})" if k in WEIGHTS else "")
                 for k, v in signals.items()
@@ -503,14 +491,10 @@ def _render_strategy_card(mcda: Dict[str, Any]) -> None:
 
 
 def _render_trend_chart() -> None:
-    """Real-time Plotly trend chart with per-condition velocity annotation.
-
-    Uses ``session_state.frame_count`` as the widget key to guarantee
-    re-render on every frame update without cross-mode key collisions.
-    """
-    st.subheader("📈 Temporal Condition Trend")
+    """Real-time Plotly trend chart with per-condition velocity annotation."""
+    st.subheader("Temporal Condition Trend")
     if not st.session_state.history:
-        st.info("No frames analysed yet — the trend chart fills as frames arrive.", icon="ℹ️")
+        st.info("No frames analysed yet — trend visualization populates as telemetry streams.")
         return
 
     df = pd.DataFrame(st.session_state.history)
@@ -528,27 +512,27 @@ def _render_trend_chart() -> None:
 
     # Annotate the drying velocity on the chart
     velocity = te.compute_drying_velocity(st.session_state.history)
-    v_label, v_icon, _ = te.trend_label(velocity)
+    v_label, _, _ = te.trend_label(velocity)
     fig.add_annotation(
         xref="paper", yref="paper", x=0.01, y=0.97,
-        text=f"{v_icon} Drying velocity: {velocity:+.2%}/lap — {v_label}",
+        text=f"Drying velocity: {velocity:+.2%}/lap ({v_label})",
         showarrow=False,
-        font=dict(size=12, color="#c9d1d9"),
-        bgcolor="rgba(0,0,0,0.45)",
-        borderpad=4,
+        font=dict(size=12, color="#cbd5e1"),
+        bgcolor="rgba(15,23,42,0.75)",
+        borderpad=6,
     )
 
     fig.update_layout(
         template="plotly_dark",
         paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="rgba(11,14,19,0.6)",
+        plot_bgcolor="rgba(15,23,42,0.6)",
         height=360,
         margin=dict(l=8, r=8, t=8, b=8),
         xaxis_title="Frame / Lap",
         yaxis_title="Probability",
         yaxis=dict(range=[0, 1]),
         legend=dict(orientation="h", y=1.12, x=0),
-        xaxis=dict(gridcolor="#21262d"),
+        xaxis=dict(gridcolor="#1e293b"),
     )
     st.plotly_chart(
         fig, use_container_width=True,
@@ -584,7 +568,7 @@ def _render_analysis(
     # ── Three-column vision panel ────────────────────────────────────────────
     col1, col2, col3 = st.columns([1.25, 1.0, 1.20])
     with col1:
-        st.subheader("📷 Live Vision Feed")
+        st.subheader("Live Vision Feed")
         display_img = eng.generate_attention_heatmap(image) if show_hm else image
         st.image(
             display_img,
@@ -592,20 +576,15 @@ def _render_analysis(
             use_container_width=True,
         )
     with col2:
-        st.subheader("🧠 Classification")
+        st.subheader("Condition Classification")
         _render_predictions(probs)
     with col3:
-        st.subheader("🏁 Strategy Call")
+        st.subheader("Optimal Strategy Decision")
         _render_strategy_card(mcda)
 
 
 def _maybe_pit_alert(action: str, slot) -> None:
-    """Play a pit-wall chirp when a high-priority pit window opens.
-
-    Uses ``st.components.v1.html`` with a base64-encoded ``<audio autoplay>``
-    tag — compatible with all Streamlit versions (autoplay kwarg removed ≥1.33).
-    Deduplicates against ``last_alert_action`` to avoid repeat playback.
-    """
+    """Trigger audio alert when a pit action is recommended."""
     if action in PIT_ACTIONS:
         if st.session_state.last_alert_action != action:
             st.session_state.last_alert_action = action
@@ -616,7 +595,7 @@ def _maybe_pit_alert(action: str, slot) -> None:
                     f"<source src='data:audio/wav;base64,{b64}' type='audio/wav'></audio>",
                     height=0,
                 )
-                st.toast(f"📻 PIT WINDOW OPEN — {ACTIONS[action]}", icon="🔔")
+                st.toast(f"PIT WINDOW OPEN — {ACTIONS[action]}")
     else:
         st.session_state.last_alert_action = None
 
@@ -630,7 +609,7 @@ if mode == "Single Image Upload":
         type=["jpg", "jpeg", "png", "webp", "bmp"],
     )
     if uploaded is None:
-        st.info("👆 Upload a trackside or onboard frame to run the detector.", icon="📂")
+        st.info("Upload a trackside or onboard frame to run the detector.")
     else:
         image = Image.open(uploaded).convert("RGB")
         probs = engine.classify_track(image)
@@ -658,8 +637,8 @@ elif mode == "Video Upload (MP4)":
         type=["mp4", "mov", "avi"],
     )
     if video_file is None:
-        st.info("👆 Upload a short clip — frames are sampled and classified.", icon="🎬")
-    elif st.button("🎬 Analyse Video", type="primary"):
+        st.info("Upload a short video clip for sequential frame sampling.")
+    elif st.button("Analyse Video", type="primary"):
         with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as tmp:
             tmp.write(video_file.read())
             tmp_path = tmp.name
@@ -670,7 +649,7 @@ elif mode == "Video Upload (MP4)":
             os.unlink(tmp_path)
 
         if not samples:
-            st.error("No frames could be extracted from this file.", icon="❌")
+            st.error("No frames could be extracted from this file.")
         else:
             st.session_state.history     = []
             st.session_state.frame_count = 0
@@ -686,7 +665,7 @@ elif mode == "Video Upload (MP4)":
 
             assert last is not None
             timestamp, frame, probs, mcda = last
-            st.success(f"Analysed **{len(samples)} frames** (last at t = {timestamp} s).", icon="✅")
+            st.success(f"Analysed {len(samples)} frames (last frame at t = {timestamp} s).")
             _render_analysis(
                 frame, probs, mcda, show_heatmap, engine,
                 caption=f"Last sampled frame (t = {timestamp} s)",
@@ -722,7 +701,7 @@ else:
                 traffic_dense,
                 telemetry["track_temp_c"],
                 telemetry["tire_wear_pct"],
-                telemetry["humidity_pct"],          # ← live simulated humidity
+                telemetry["humidity_pct"],
             )
             _push_history(f"Lap {frame_id}", probs, str(mcda["recommended_action"]))
 
@@ -741,7 +720,7 @@ else:
             _maybe_pit_alert(str(mcda["recommended_action"]), alert_placeholder)
             time.sleep(1.5)
 
-        st.success("🏁 Stream complete — full wet → dry transition analysed!")
+        st.success("Stream simulation complete — full race sequence analyzed.")
     else:
         with chart_placeholder.container():
             _render_trend_chart()
@@ -754,18 +733,11 @@ st.divider()
 st.markdown(
     """
 <div class="ww-footer">
-<b>🤗 Hugging Face Hub Compliance</b><br>
-Vision model: <a href="https://huggingface.co/openai/clip-vit-base-patch32" target="_blank">openai/clip-vit-base-patch32</a>
-(zero-shot CLIP) ·
-Alt: <a href="https://huggingface.co/google/vit-base-patch16-224" target="_blank">google/vit-base-patch16-224</a><br>
-Dataset: publish via <code>dataset_setup.py</code> →
-<a href="https://huggingface.co/datasets" target="_blank">HF Dataset Hub</a><br>
-Weather data: <a href="https://open-meteo.com/" target="_blank">Open-Meteo API</a> (free, no key required)<br>
-Team:
-<a href="https://huggingface.co/" target="_blank">HF/&lt;member-1&gt;</a> ·
-<a href="https://huggingface.co/" target="_blank">HF/&lt;member-2&gt;</a> ·
-<a href="https://huggingface.co/" target="_blank">HF/&lt;member-3&gt;</a><br>
-Built with Streamlit · Transformers · Plotly · OpenCV — <i>Weather Whiplash, F1 Hackathon 2026</i>.
+<b>Hugging Face Hub Integration</b><br>
+Vision model: <a href="https://huggingface.co/openai/clip-vit-base-patch32" target="_blank">openai/clip-vit-base-patch32</a> (zero-shot CLIP)<br>
+Dataset: publish via <code>dataset_setup.py</code> → <a href="https://huggingface.co/datasets" target="_blank">HF Dataset Hub</a><br>
+Weather API: <a href="https://open-meteo.com/" target="_blank">Open-Meteo API</a><br>
+Built with Streamlit · Transformers · Plotly · OpenCV — <i>Weather Whiplash Analytics</i>.
 </div>
 """,
     unsafe_allow_html=True,

@@ -1,75 +1,53 @@
-# 🎬 Weather Whiplash — 2-Minute Demo Pitch Script
+# Weather Whiplash — Executive Pitch Script
 
-**Target audience:** Hackathon judges
+**Target audience:** Executive Board & Technical Evaluators
 **Total duration:** ~2 minutes (120 seconds)
-**Presenters:** 2 — **Strategist** (S) and **Engineer** (E)
-**Pre-demo checklist:** App running, heatmap toggle OFF, stream set to 15 laps, circuit = Street Circuit, traffic = ON
+**Presenters:** 2 — **Race Strategist** (S) and **Lead AI Engineer** (E)
+**Pre-demo checklist:** Application initialized, heatmap overlay toggle OFF, simulation set to 15 laps, circuit = Street Circuit, traffic = ON
 
 ---
 
-## Segment 1 — The Problem (0:00 – 0:25)
+## Segment 1 — Technical & Strategic Problem (0:00 – 0:25)
 
-**[Visual: onboard footage of a wet street circuit; rain on visor; wipers on the pit wall camera]**
+**[Visual: Onboard video stream of wet circuit surface; dynamic weather transition]**
 
-> **(S):** "Rain hits a street circuit and the track can change from Wet to Dry in six laps —
-> faster than any weather radar update. Every lap on the wrong tyre costs two to four seconds.
-> But on a street track there is nowhere to overtake: pitting one lap too early drops you into
-> traffic you can never pass, and the win is gone. Today that crossover call is a human
-> squinting at a television feed and trusting their gut. We automated it — in real time."
+> **(S):** "Track surface conditions on high-speed circuits evolve far faster than traditional meteorology models can report. Operating on sub-optimal tyre compounds incurs a 2 to 4 second penalty per lap. On street circuits with constrained overtaking zones, premature pit windows drop vehicles into dense midfield traffic. Weather Whiplash automates track surface assessment and compound crossover decision-making in real time."
 
 ---
 
-## Segment 2 — The AI Vision Engine (0:25 – 0:55)
+## Segment 2 — Computer Vision & Machine Learning Architecture (0:25 – 0:55)
 
-**[Visual: upload a wet track frame; watch the four probability bars animate]**
+**[Visual: Ingestion of track surface frame; visual probability classification vector rendering]**
 
-> **(E):** "Weather Whiplash feeds trackside frames straight into
-> **CLIP — `openai/clip-vit-base-patch32` — pulled live from the Hugging Face Hub**.
-> Zero-shot, zero fine-tuning: the model scores every frame against four natural-language
-> descriptions — Dry, Damp, Wet, Drying — and returns a probability vector in under a second."
+> **(E):** "Weather Whiplash ingests optical video feeds into a **zero-shot CLIP vision model (`openai/clip-vit-base-patch32`) hosted on Hugging Face**. The pipeline evaluates surface characteristics across four discrete classifications: Dry, Damp, Wet, and Drying.
 
-**[Action: flip the Grad-CAM toggle ON]**
+**[Action: Enable Grad-CAM Heatmap overlay]**
 
-> **(E):** "And we do not ask you to trust a black box. The CLS-token attention heatmap
-> lights up exactly what the model is focusing on — the shiny standing water off the racing
-> line, the lighter dry groove forming where the rubber has cleared. That is explainability
-> a race engineer can verify at a glance."
+> **(E):** "To ensure model explainability for race engineers, the CLS-token attention heatmap visualizes key visual signals — distinguishing standing water film from clearing racing grooves."
 
 ---
 
-## Segment 3 — The Strategy Engine (0:55 – 1:25)
+## Segment 3 — Decision Support & MCDA Strategy Engine (0:55 – 1:25)
 
-**[Visual: sidebar set to Street Circuit + Dense Traffic; watch the strategy card change]**
+**[Visual: Sidebar configured for Street Circuit + Dense Traffic; real-time MCDA decision output updates]**
 
-> **(S):** "Vision alone does not win races — context does. Our MCDA engine runs a
-> Weighted Sum Model across four pit-wall actions, blending five weighted criteria:
-> **dry-track probability at 35%**, lap-time falloff at 25%, traffic re-entry penalty at 20%,
-> track evaporation and tyre wear at 10% each.
->
-> On a street circuit with dense traffic, pitting costs track position you cannot recover —
-> so the engine calls **HOLD**, and tells you why in plain language the whole pit wall understands.
-> The moment the crossover math flips — dry probability climbs, pace loss exceeds tolerance —
-> the card goes orange, the pit alert fires, and you hear it: **Box, box. Fit slicks.**"
+> **(S):** "Computer vision is coupled with multi-criteria operational constraints. Our MCDA engine evaluates a Weighted Sum Model across four strategy actions, balancing surface dryness probability, lap time delta, traffic re-entry penalty, evaporation rate, and tire wear.
+
+**[Action: Demonstrate real-time parameter adjustment]**
+
+> **(S):** "When traffic density presents high re-entry risk, the system recommends stint extension. As surface drying accelerates and pace loss exceeds threshold, the decision engine signals pit entry."
 
 ---
 
-## Segment 4 — Live Demo Walkthrough (1:25 – 2:00)
+## Segment 4 — Real-time Simulation & Analytical Output (1:25 – 2:00)
 
-**[Action: hit '🚦 Start / Restart Stream' — 15-lap wet-to-dry transition runs at 1.5 s/frame]**
+**[Action: Click 'Start Live Simulation Stream' — 15-lap simulation sequence]**
 
-> **(E):** "Watch a full race evolve live. Lap one: heavy wet — vision reads 84% Wet,
-> engine calls intermediates. By lap eight the Drying line climbs on the trend chart,
-> the traffic penalty holds us in —HOLD, extend 2 laps. Lap twelve: dry probability
-> crosses the threshold, 34 degrees of evaporation — the card flips orange,
-> the chirp fires — **Box for Slicks, high confidence**, with the rationale a real
-> race engineer would radio. One frame every 1.5 seconds, live charts, live calls,
-> all running free on a Hugging Face Space CPU."
+> **(E):** "During real-time telemetry streaming, surface state evolution is tracked lap-by-lap. As dry probability crosses the crossover threshold and evaporation rate increases, the strategy engine triggers the compound change recommendation with confidence metrics and engineer rationales."
 
-**[Closing — both presenters face camera]**
+**[Closing]**
 
-> **(S + E):** "Streamlit frontend, CLIP from the Hub, our sample dataset on the
-> Dataset Hub, every teammate on their own Hugging Face account.
-> **Weather Whiplash** — because the team that reads the track first wins. Thank you."
+> **(S + E):** "Weather Whiplash provides scalable, real-time decision intelligence for dynamic racing strategy. Thank you."
 
 ---
 
