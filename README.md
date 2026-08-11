@@ -1,16 +1,8 @@
 ---
 title: Weather Whiplash — Live Track Condition Detector
-emoji: 🏎️
-colorFrom: red
-colorTo: gray
-sdk: streamlit
-sdk_version: "1.36.0"
-app_file: app.py
-pinned: false
-license: mit
 ---
 
-# 🏎️ Weather Whiplash: Live Track Condition Detector
+# Weather Whiplash: Live Track Condition Detector
 
 An AI race-strategy dashboard that watches the track surface in real time,
 classifies it as **Dry, Damp, Wet, or Drying** using zero-shot CLIP from the
@@ -184,8 +176,6 @@ pip install accelerate>=0.26
 
 | Name | Hugging Face Profile |
 |---|---|
-| Krishiv Wahi | [huggingface.co/krishivwahi](https://huggingface.co/krishivwahi) |
+| Krishiv Wahi | [huggingface.co/krishivwahi](https://huggingface.co/astroKW) |
 
 ---
-
-*Weather Whiplash — because the team that reads the track first wins.*
