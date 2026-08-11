@@ -1,0 +1,14 @@
+streamlit>=1.35
+torch>=2.1
+torchvision>=0.16
+transformers>=4.38
+accelerate>=0.26
+pillow>=10.0
+numpy>=1.24
+pandas>=2.0
+plotly>=5.18
+matplotlib>=3.7
+opencv-python-headless>=4.8
+huggingface_hub>=0.20
+datasets>=2.16
+requests>=2.31
